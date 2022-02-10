@@ -1,47 +1,13 @@
-const db = require('../../../db/index')
+const db = require('../../../db/index');
+const userRegistry = require('../../../services/userRegistryService');
 
 module.exports = {
     Query: {
-        contacts: async () => {
-            const contacts = await db('contacts');
-            return contacts;
-        }
+        contacts: async () => userRegistry.fetchAllContacts()
     },
     Mutation: {
-        createContact: async (_, {data}) => {
-            const {
-                name,
-                email,
-                phone
-            } = data;
-
-
-            const [createdContact] = await db('contacts').insert({
-                name,
-                email,
-                phone
-            }).returning('*');
-
-            return createdContact;
-        },
-        updateContact: async (_, {id, data}) => {
-            // interface IData {
-            //     name?: string;
-            //     email?: string;
-            //     phone?: string;
-            // }
-            const [editedContact] = await db('contacts').where({id}).update(data).returning('*');
-
-            return editedContact;
-        },
-        deleteContact: async (_, { id }) => {
-            console.log({id})
-
-            const [deletedContact] = await db('contacts').where({id}).del().returning('*');
-
-            console.log({deletedContact})
-
-            return deletedContact
-        }
+        createContact: async (_, {data}) => userRegistry.createContact(data),
+        updateContact: async (_, {id, data}) => userRegistry.updateContact(id, data),
+        deleteContact: async (_, { id }) => userRegistry.deleteContact(id)
     }
 } 
